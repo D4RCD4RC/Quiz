@@ -5,14 +5,13 @@
 
     body {
       min-height: 100vh;
-  background: url("http://source.unsplash.com/random?write");
-  background-position: center;
-  background-size: cover;
-  font-family: 'Roboto', sans-serif; 
+      background: url("http://source.unsplash.com/random?write");
+      background-position: center;
+      background-size: cover;
+      font-family: 'Roboto', sans-serif; 
     }
 
-    .contenedor {
-      
+    .contenedor {      
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -21,8 +20,7 @@
       color: rgb(0, 0, 0);
       text-align: center;
       padding: 2rem;       
-      font-family: 'Audiowide', cursive;
-      
+      font-family: 'Audiowide', cursive;      
     }
 
     .encabezado {
@@ -36,13 +34,13 @@
       margin-bottom: 1rem;
     }
 
-    .categoria {
-      display: none;
+    .respuesta {
+      display: none;      
     }
 
     .pregunta {
       padding: 10px;
-      puntero: pointer;
+      font-size: xx-large;      
     }   
 
     .btn {
@@ -50,13 +48,13 @@
       width: 60%;
       max-width: 550px;
       padding: 10px;
-      margin: 5px;
+      margin: 15px;
       cursor: pointer;
+      font-size: xx-large;
     }
 
     .btn:hover {
-      transform: scale(1.05);
-      
+      transform: scale(1.05);      
     }
     
     .numero{
@@ -64,10 +62,25 @@
       opacity:0.3;
       top: 10px;
       right: 10px;
+      font-size: xx-large;
     }
     
     .puntaje{
       padding:10px;
       color:white;
     }
+
+     @media screen and (min-width: 1024px ) {
+      .pregunta {
+        font-size:x-large;            
+      } 
+      .btn {
+        font-size: x-large;
+      }
+
+      .numero{       
+        font-size: x-large;
+      }
+    }
+    
   
