@@ -46,7 +46,7 @@ let npreguntas = [];
 let preguntas_hechas = 0;
 let preguntas_correctas = 0;
 
-function escogerPreguntaAleatoria() {
+const escogerPreguntaAleatoria = () => {
   let n;
   if (preguntas_aleatorias) {
     n = Math.floor(Math.random() * interprete_bp.length);
@@ -79,9 +79,9 @@ function escogerPreguntaAleatoria() {
   preguntas_hechas++;
 
   escogerPregunta(n);
-}
+};
 
-function escogerPregunta(n) {
+const escogerPregunta = (n) => {
   pregunta = interprete_bp[n];
   select_id('categoria').innerHTML = pregunta.answer;
   select_id('pregunta').innerHTML = pregunta.question;
@@ -93,8 +93,8 @@ function escogerPregunta(n) {
     select_id('puntaje').innerHTML = '';
   }
   desordenarRespuestas(pregunta);
-}
-function desordenarRespuestas(pregunta) {
+};
+const desordenarRespuestas = (pregunta) => {
   posibles_respuestas = [
     pregunta.answers[0],
     pregunta.answers[1],
@@ -108,11 +108,11 @@ function desordenarRespuestas(pregunta) {
   select_id('btn3').innerHTML = posibles_respuestas[2];
   select_id('btn4').innerHTML = posibles_respuestas[3];
   select_id('categoria').innerHTML = posibles_respuestas[4];
-}
+};
 
 let suspender_botones = false;
 
-function oprimir_btn(i) {
+const oprimir_btn = (i) => {
   if (suspender_botones) {
     return;
   }
@@ -133,14 +133,14 @@ function oprimir_btn(i) {
     reiniciar();
     suspender_botones = false;
   }, 3000);
-}
+};
 
-function reiniciar() {
+const reiniciar = () => {
   for (const btn of btn_correspondiente) {
     btn.style.background = 'white';
   }
   escogerPreguntaAleatoria();
-}
+};
 
 function select_id(id) {
   return document.getElementById(id);
@@ -150,7 +150,7 @@ function style(id) {
   return select_id(id).style;
 }
 
-function readText(ruta_local) {
+const readText = (ruta_local) => {
   var texto = null;
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.open('GET', ruta_local, false);
@@ -159,4 +159,4 @@ function readText(ruta_local) {
     texto = xmlhttp.responseText;
   }
   return texto;
-}
+};
