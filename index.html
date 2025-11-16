@@ -1,26 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Juego de preguntas</title>
-    <script src="sweetalert2.all.min.js"></script>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <title>Juego de Preguntas</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="contenedor">
+    <!-- Puntuación -->
+    <div class="puntaje" id="puntaje"></div>
 
-  <body>
-    <div class="contenedor">
-      <div class="puntaje" id="puntaje"></div>
-      <div class="encabezado">
-        <div class="respuesta" id="categoria"></div>
-        <div class="numero" id="numero"></div>
-        <div class="pregunta" id="pregunta"></div>
-      </div>
-      <div class="btn" id="btn1" onclick="oprimir_btn(0)"></div>
-      <div class="btn" id="btn2" onclick="oprimir_btn(1)"></div>
-      <div class="btn" id="btn3" onclick="oprimir_btn(2)"></div>
-      <div class="btn" id="btn4" onclick="oprimir_btn(3)"></div>
-
-      <script src="./script.js"></script>
+    <!-- Encabezado de la pregunta -->
+    <div class="encabezado">
+      <div class="categoria" id="categoria"></div>
+      <div class="numero" id="numero"></div>
+      <div class="pregunta" id="pregunta"></div>
     </div>
-  </body>
+
+    <!-- Botones de respuestas -->
+    <div class="opciones">
+      <button id="btn1" class="btn"></button>
+      <button id="btn2" class="btn"></button>
+      <button id="btn3" class="btn"></button>
+      <button id="btn4" class="btn"></button>
+    </div>
+
+    <!-- Botón reiniciar -->
+    <div class="reiniciar-container">
+      <button id="btnReiniciar" class="btn reiniciar">🔄 Reiniciar</button>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
 </html>

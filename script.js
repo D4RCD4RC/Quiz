@@ -1,162 +1,144 @@
-/*
-Juego de preguntas y
-respuestas
-Juego de preguntas y respuestas sobre películas
-Descripción
-● Se proporciona un JSON que contiene un array de 50 objetos que
-representan preguntas sobre películas que contiene la pregunta,
-una lista de respuestas y la respuesta correcta.
-● La aplicación debe leer este JSON y procesar las preguntas y
-posteriormente mostrar en la pantalla la primera pregunta junto a
-la lista de respuestas con un botón para seleccionar una. Para ello
-debe usar los métodos de DOM y gestión de eventos.
-● Si la respuesta es correcta debe aumentar un contador de aciertos y
-avanzar a la siguiente pregunta. Si es incorrecta simplemente
-avanzar.
-● Al finalizar las preguntas debe mostrar la puntuación final.
+// ================================
+// Variables globales
+// ================================
+let preguntas = [];           // Array con todas las preguntas del JSON
+let preguntaActual = null;    // Pregunta mostrada actualmente
+let botonesRespuesta = [];    // Array con los botones
+let preguntasHechas = 0;
+let preguntasCorrectas = 0;
+let preguntasMostradas = [];  // Índices ya mostrados
+let respuestasDesordenadas = []; // Array de respuestas para mostrar
+let fallos = 0;               // Contador de fallos
+const MAX_FALLOS = 5;
 
-sin 'use strict'; porque varias variables no estan definidas ni como constante ni como let
+// ================================
+// Inicialización
+// ================================
+window.addEventListener("DOMContentLoaded", async () => {
+  // Cargar JSON
+  const res = await fetch("./quiz.json");
+  preguntas = await res.json();
 
-json
-https://gist.github.com/bertez/2528edb2ab7857dae29c39d1fb669d31
-
-
-*/
-
-let preguntas_aleatorias = true;
-let mostrar_pantalla_juego_términado = true;
-let reiniciar_puntos_al_reiniciar_el_juego = true;
-
-window.onload = function () {
-  base_preguntas = readText('./quiz.json');
-  interprete_bp = JSON.parse(base_preguntas);
-  escogerPreguntaAleatoria();
-};
-
-let pregunta;
-let posibles_respuestas;
-btn_correspondiente = [
-  select_id('btn1'),
-  select_id('btn2'),
-  select_id('btn3'),
-  select_id('btn4'),
-];
-let npreguntas = [];
-
-let preguntas_hechas = 0;
-let preguntas_correctas = 0;
-
-const escogerPreguntaAleatoria = () => {
-  let n;
-  if (preguntas_aleatorias) {
-    n = Math.floor(Math.random() * interprete_bp.length);
-  } else {
-    n = 0;
-  }
-
-  while (npreguntas.includes(n)) {
-    n++;
-    if (n >= interprete_bp.length) {
-      n = 0;
-    }
-    if (npreguntas.length == interprete_bp.length) {
-      if (mostrar_pantalla_juego_términado) {
-        swal.fire({
-          title: 'Juego finalizado',
-          text:
-            'Puntuación: ' + preguntas_correctas + '/' + (preguntas_hechas - 1),
-          icon: 'success',
-        });
-      }
-      if (reiniciar_puntos_al_reiniciar_el_juego) {
-        preguntas_correctas = 0;
-        preguntas_hechas = 0;
-      }
-      npreguntas = [];
-    }
-  }
-  npreguntas.push(n);
-  preguntas_hechas++;
-
-  escogerPregunta(n);
-};
-
-const escogerPregunta = (n) => {
-  pregunta = interprete_bp[n];
-  select_id('categoria').innerHTML = pregunta.answer;
-  select_id('pregunta').innerHTML = pregunta.question;
-  select_id('numero').innerHTML = n;
-  let pc = preguntas_correctas;
-  if (preguntas_hechas > 1) {
-    select_id('puntaje').innerHTML = pc + '/' + (preguntas_hechas - 1);
-  } else {
-    select_id('puntaje').innerHTML = '';
-  }
-  desordenarRespuestas(pregunta);
-};
-const desordenarRespuestas = (pregunta) => {
-  posibles_respuestas = [
-    pregunta.answers[0],
-    pregunta.answers[1],
-    pregunta.answers[2],
-    pregunta.answers[3],
-    pregunta.correct,
+  // Seleccionar botones
+  botonesRespuesta = [
+    document.getElementById("btn1"),
+    document.getElementById("btn2"),
+    document.getElementById("btn3"),
+    document.getElementById("btn4")
   ];
 
-  select_id('btn1').innerHTML = posibles_respuestas[0];
-  select_id('btn2').innerHTML = posibles_respuestas[1];
-  select_id('btn3').innerHTML = posibles_respuestas[2];
-  select_id('btn4').innerHTML = posibles_respuestas[3];
-  select_id('categoria').innerHTML = posibles_respuestas[4];
-};
+  // Agregar eventos a botones
+  botonesRespuesta.forEach((btn, idx) => {
+    btn.addEventListener("click", () => responder(idx));
+  });
 
-let suspender_botones = false;
+  // Botón reiniciar
+  document.getElementById("btnReiniciar").addEventListener("click", reiniciarJuego);
 
-const oprimir_btn = (i) => {
-  if (suspender_botones) {
+  // Mostrar primera pregunta
+  mostrarPreguntaAleatoria();
+});
+
+// ================================
+// Funciones principales
+// ================================
+function mostrarPreguntaAleatoria() {
+  if (preguntasMostradas.length === preguntas.length) {
+    Swal.fire({
+      title: "Juego finalizado",
+      text: `Puntuación: ${preguntasCorrectas}/${preguntasHechas}`,
+      icon: "success"
+    });
     return;
   }
-  suspender_botones = true;
-  if (posibles_respuestas[i] === posibles_respuestas[4]) {
-    preguntas_correctas++;
-    btn_correspondiente[i].style.background = 'rgb(0,250,154)';
+
+  // Elegir pregunta aleatoria no repetida
+  let idx;
+  do {
+    idx = Math.floor(Math.random() * preguntas.length);
+  } while (preguntasMostradas.includes(idx));
+
+  preguntasMostradas.push(idx);
+  preguntasHechas++;
+  preguntaActual = preguntas[idx];
+
+  // Mostrar pregunta
+  document.getElementById("pregunta").innerText = preguntaActual.question;
+  document.getElementById("categoria").innerText = "";
+  document.getElementById("numero").innerText = preguntasHechas;
+  document.getElementById("puntaje").innerText = `${preguntasCorrectas}/${preguntasHechas - 1}`;
+
+  // Mezclar respuestas
+  respuestasDesordenadas = [...preguntaActual.answers];
+  respuestasDesordenadas.push(preguntaActual.correct);
+  respuestasDesordenadas.sort(() => Math.random() - 0.5);
+
+  // Mostrar en botones
+  botonesRespuesta.forEach((btn, i) => btn.innerText = respuestasDesordenadas[i]);
+}
+
+// ================================
+// Responder una pregunta
+// ================================
+let bloquearBotones = false;
+
+function responder(idx) {
+  if (bloquearBotones) return;
+  bloquearBotones = true;
+
+  const correcto = respuestasDesordenadas[idx] === preguntaActual.correct;
+
+  if (correcto) {
+    botonesRespuesta[idx].style.background = "rgb(0,250,154)";
+    preguntasCorrectas++;
   } else {
-    btn_correspondiente[i].style.background = 'rgb(235, 38, 81)';
+    botonesRespuesta[idx].style.background = "rgb(235,38,81)";
+    fallos++;
   }
-  for (let j = 0; j < 4; j++) {
-    if (posibles_respuestas[j] == posibles_respuestas[4]) {
-      btn_correspondiente[j].style.background = 'rgb(0,250,154)';
-      break;
-    }
-  }
+
+  // Mostrar la respuesta correcta
+  const indexCorrecta = respuestasDesordenadas.indexOf(preguntaActual.correct);
+  botonesRespuesta[indexCorrecta].style.background = "rgb(0,250,154)";
+  document.getElementById("categoria").innerText = "Respuesta correcta: " + preguntaActual.correct;
+
+  // Actualizar puntaje
+  document.getElementById("puntaje").innerText = `${preguntasCorrectas}/${preguntasHechas}`;
+
   setTimeout(() => {
-    reiniciar();
-    suspender_botones = false;
-  }, 3000);
-};
+    reiniciarPregunta();
+    bloquearBotones = false;
 
-const reiniciar = () => {
-  for (const btn of btn_correspondiente) {
-    btn.style.background = 'white';
-  }
-  escogerPreguntaAleatoria();
-};
-
-function select_id(id) {
-  return document.getElementById(id);
+    // Reinicio automático después de 5 fallos
+    if (fallos >= MAX_FALLOS) {
+      Swal.fire({
+        title: "¡Has fallado 5 veces!",
+        text: "Vamos a reiniciar la ronda de preguntas",
+        icon: "warning"
+      }).then(() => {
+        reiniciarJuego();
+      });
+    }
+  }, 2000);
 }
 
-function style(id) {
-  return select_id(id).style;
+// ================================
+// Reiniciar colores y mostrar siguiente pregunta
+// ================================
+function reiniciarPregunta() {
+  botonesRespuesta.forEach(btn => btn.style.background = "#fff");
+  mostrarPreguntaAleatoria();
 }
 
-const readText = (ruta_local) => {
-  var texto = null;
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open('GET', ruta_local, false);
-  xmlhttp.send();
-  if (xmlhttp.status == 200) {
-    texto = xmlhttp.responseText;
-  }
-  return texto;
-};
+// ================================
+// Reiniciar juego completo
+// ================================
+function reiniciarJuego() {
+  preguntasHechas = 0;
+  preguntasCorrectas = 0;
+  fallos = 0;
+  preguntasMostradas = [];
+  botonesRespuesta.forEach(btn => btn.style.background = "#fff");
+  document.getElementById("categoria").innerText = "";
+  document.getElementById("puntaje").innerText = "";
+  mostrarPreguntaAleatoria();
+}
